@@ -5,7 +5,7 @@ const User = require("../models/userModel");
 const food = require("../models/foodModel");
 
 router.get("/", (req, res) => {
-  res.send("<h1>Hello Mandy<h1>");
+  res.send("Hello");
 });
 
 router.get("/about", (req, res) => {

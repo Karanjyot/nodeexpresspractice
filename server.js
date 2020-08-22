@@ -2,10 +2,13 @@ var express = require("express");
 var path = require("path");
 var app = express ();
 const mongoose = require("mongoose")
+const cors = require("cors")
 
 
 
 var PORT = 5000 || process.env.PORT
+
+app.use(cors())
 
 //middleware to handle JSON/URLencoded data. Parse JSON (turn json into js object)
 
