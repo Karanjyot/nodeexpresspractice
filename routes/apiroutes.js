@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const members = require("../members");
+const User = require("../models/userModel");
+const food = require("../models/foodModel");
 
 router.get("/", (req, res) => {
   res.send("<h1>Hello Mandy<h1>");
@@ -11,14 +13,14 @@ router.get("/about", (req, res) => {
 });
 
 // retrieve a member
-router.get("/api/:id", (req, res) => {
+router.get("/api/findmember/:id", (req, res) => {
   for (i = 0; i < members.length; i++) {
     if (members[i].id === parseInt(req.params.id)) {
       console.log(typeof req.params.id);
-      res.send(members[i]);
+      return res.send(members[i]);
     }
   }
-  return res.send("members not found");
+  res.send("members not found");
 });
 
 // router.get("/api/member", (req,res)=>{
@@ -54,6 +56,105 @@ router.post("/api/member/update", (req, res) => {
   }
 
   return res.send("members not found");
+});
+
+// save to user model
+
+router.post("/api/user", (req, res) => {
+  const user = new User({
+    name: req.body.name,
+    email: req.body.email,
+  });
+
+  user
+    .save()
+    .then((data) => {
+      res.json(data);
+    })
+    .catch((err) => {
+      res.json({ message: err });
+    });
+});
+
+//save to food model
+
+router.post("/api/food", (req, res) => {
+  food
+    .create(req.body)
+    .then((data) => {
+      res.json(data);
+    })
+    .catch((err) => {
+      res.send({ message: err });
+    });
+});
+
+// retrieve all from food
+
+router.get("/api/findall", (req, res) => {
+  food
+    .find({})
+    .then((data) => {
+      res.json(data);
+    })
+    .catch((err) => {
+      res.json({ message: err });
+    });
+});
+
+// retrive specific food through get route
+
+router.get("/api/findone/:rating/:food", (req, res) => {
+  food
+    .find({ rating: req.params.rating, food: req.params.food })
+    .then((data) => {
+      res.json(data);
+    })
+    .catch((err) => {
+      res.json({ message: err });
+    });
+});
+
+// retrieve specific food through post route
+
+router.post("/api/findone/", (req, res) => {
+  food
+    .find({ food: req.body.food })
+    .then((data) => {
+      res.json(data);
+    })
+    .catch((err) => {
+      res.json({ message: err });
+    });
+});
+
+//update food item
+
+router.put("/api/update", (req, res) => {
+  food
+    .updateOne(
+      { _id: req.body._id },
+      { $set: { food: req.body.food, rating: req.body.rating } }
+    )
+    .then((data) => {
+      res.json(data);
+    })
+    .catch((err) => {
+      res.json({ message: err });
+    });
+});
+
+// detele food item by id
+
+router.delete("/api/delete", (req, res) => {
+  food
+    .deleteOne({ _id: req.body._id })
+    .then((data) => {
+      res.json(data);
+    })
+    .catch((err) => {
+      res.json({ message: err });
+    });
 });
 
 module.exports = router;

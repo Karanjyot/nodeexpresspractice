@@ -1,6 +1,7 @@
 var express = require("express");
 var path = require("path");
 var app = express ();
+const mongoose = require("mongoose")
 
 
 
@@ -17,6 +18,12 @@ app.use('/', require("./routes/apiroutes"))
 // set a static folder
 // app.use(express.static(path.join(__dirname, 'public')))
 
+//connect to DB
+
+mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/newdb",{ useNewUrlParser: 
+true }, ()=>{
+    console.log("connected to DB")
+});
 
 app.listen(PORT, ()=>{
     console.log(`Server is running on port ${PORT}`)
