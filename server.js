@@ -6,6 +6,7 @@ const cors = require("cors")
 
 
 
+
 var PORT = 5000 || process.env.PORT
 
 app.use(cors())
@@ -15,8 +16,9 @@ app.use(cors())
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// 
+// import routes
 app.use('/', require("./routes/apiroutes"))
+app.use("/", require("./routes/auth"))
 
 // set a static folder
 // app.use(express.static(path.join(__dirname, 'public')))

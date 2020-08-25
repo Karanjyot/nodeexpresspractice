@@ -3,6 +3,7 @@ const router = express.Router();
 const members = require("../members");
 const User = require("../models/userModel");
 const food = require("../models/foodModel");
+const jwt = require("jsonwebtoken");
 
 router.get("/", (req, res) => {
   res.send("Hello");
@@ -157,4 +158,57 @@ router.delete("/api/delete", (req, res) => {
     });
 });
 
+// login route
+
+router.post("/api/login", (req, res) => {
+  //mock user
+
+  const user = {
+    id: 1,
+    username: "karanjyot",
+    email: "karanjyot@gmail.com",
+  };
+
+  jwt.sign({ user: user }, "secretkey1", (err, token) => {
+    res.json({ token: token });
+  });
+});
+
+//protected route
+
+router.post("/api/protectedroute", verifyToken, (req,res)=>{
+  res.json("protected routed access granted")
+})
+
+//middleware function
+
+function verifyToken(req,res,next){
+  //get auth header token
+  const bearerHeader = req.headers['authorization']
+
+  //check if bearer is undefined
+
+  if(typeof bearerHeader != 'undefined'){
+
+    //split at space
+
+    const bearer = bearerHeader.split(' ')
+
+    //get token from array
+
+    const bearerToken = bearer[1]
+
+    //set the token
+
+    req.token = bearerToken
+
+    //call next middleware
+    
+    next()
+
+  }else{
+    //forbidden
+    res.sendStatus(403)
+  }
+}
 module.exports = router;
