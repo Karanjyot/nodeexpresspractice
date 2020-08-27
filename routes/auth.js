@@ -2,6 +2,8 @@ const router = require("express").Router();
 const user = require("../models/userModel");
 const bcrypt = require("bcryptjs");
 const { registrationValidation, loginValidation } = require("../validation");
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
 router.post("/register", async (req, res) => {
   // validate data before making user
@@ -14,6 +16,7 @@ router.post("/register", async (req, res) => {
 
   // hash the password
 
+  // salt is random number of charcters put infront/back of hash password
   const salt = await bcrypt.genSalt(10);
   const hashedpassword = await bcrypt.hash(req.body.password, salt);
   // check if user is in DB
@@ -52,10 +55,19 @@ router.post("/login", async (req, res) => {
       res.json("invalid email or password");
     } else {
       const validPass = await bcrypt.compare(req.body.password, data.password);
+
+      // valid pass is a boolean value(true/false)
       if (!validPass) {
         res.send("Invalid password");
       } else {
-        res.send("proceed");
+        //create and assign token
+        const token = jwt.sign(
+          { _id: data._id, email: data.email },
+          process.env.TOKEN_SECRET
+        );
+        // add token to header. You can call token anything. In this case it is "auth-token"
+        res.header("auth-token", token);
+        res.send(token);
       }
     }
   });
