@@ -8,8 +8,13 @@ module.exports = function (req, res, next) {
   if (!token) {
     return res.status(401).send("Access Denied");
   } else {
-    const verified = jwt.verify(token, process.env.TOKEN_SECRET);
-    req.user = verified;
-    next();
+    jwt.verify(token, process.env.TOKEN_SECRET, (err, user) => {
+      if (err) {
+        return res.sendStatus(403);
+      }
+
+      req.user = user;
+      next();
+    });
   }
 };
